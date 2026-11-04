@@ -1,0 +1,21 @@
+[project]
+name = "zotmark"
+version = "0.1.0"
+description = "Sync Zotero library and PDF annotations into Obsidian notes"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "click>=8.5.0",
+    "httpx>=0.28.1",
+    "jinja2>=3.1.6",
+    "pyyaml>=6.0.3",
+    "rich>=15.0.0",
+]
+
+[project.scripts]
+zotmark = "zotmark.cli:main"
+zotero-sync = "zotmark.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.10,<0.13.0"]
+build-backend = "uv_build"

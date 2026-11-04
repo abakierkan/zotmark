@@ -1,0 +1,60 @@
+# ==============================================================================
+# Zotmark Configuration (Example)
+# Copy this file to config.yaml or run 'zotmark init' to generate interactively.
+# ==============================================================================
+
+# Target Obsidian Vault directory
+vault_path: "~/Documents/ObsidianVault"
+
+# Default destination folder inside vault (relative to vault_path)
+default_output_dir: "Literature"
+
+# Note file naming pattern: e.g. '@{{ citekey }}' -> '@author-year-title.md'
+file_name_format: "@{{ citekey }}"
+
+# Zotero Connection Settings
+zotero:
+  api_url: "http://127.0.0.1:23119"
+  db_path: "~/Zotero/zotero.sqlite"
+
+# Category Mapping Rules
+categories:
+  # Example 1: Match by Zotero Collection
+  - name: "Project Collection"
+    match:
+      collection: "My Project"
+    output_dir: "Literature/MyProject"
+    template: "templates/paper.md.j2"
+    enabled: true
+
+  # Example 2: Books
+  - name: "Books"
+    match:
+      item_type: "book"
+    output_dir: "Books"
+    template: "templates/book.md.j2"
+    enabled: true
+
+  # Example 3: Journal Articles, Preprints & Conference Papers
+  - name: "Journal Articles & Preprints"
+    match:
+      item_type:
+        - "journalArticle"
+        - "preprint"
+        - "conferencePaper"
+    output_dir: "Literature"
+    template: "templates/paper.md.j2"
+    enabled: true
+
+  # Example 4: Catch-all fallback
+  - name: "All Other Items"
+    output_dir: "Literature"
+    template: "templates/default.md.j2"
+    enabled: true
+
+# Sync Behaviors
+sync:
+  preserve_user_notes: true
+  user_content_marker: "<!-- USER_CONTENT_START -->"
+  include_annotations: true
+  include_abstract: true

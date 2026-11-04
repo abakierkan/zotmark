@@ -1,0 +1,57 @@
+---
+aliases:
+  - "{{ title | replace('"', '\\"') }}"
+  - "@{{ citekey }}"
+tags:
+  - "reference"
+  - "book"
+{% for tag in tags %}  - "{{ tag }}"
+{% endfor %}citekey: "{{ citekey }}"
+title: "{{ title | replace('"', '\\"') }}"
+authors:
+{% for author in authors %}  - "{{ author }}"
+{% endfor %}{% if year %}year: {{ year }}
+{% endif %}{% if publisher %}publisher: "{{ publisher | replace('"', '\\"') }}"
+{% endif %}{% if isbn %}isbn: "{{ isbn }}"
+{% endif %}{% if url %}url: "{{ url }}"
+{% endif %}zotero_link: "zotero://select/items/{{ key }}"
+date_added: "{{ date_added }}"
+---
+
+# {{ title }}
+
+{% if abstract %}
+> [!abstract] Overview
+> {{ abstract | replace('\n', '\n> ') }}
+{% endif %}
+
+## Book Information
+- **Authors:** {{ authors_string }}
+{% if publisher %}- **Publisher:** {{ publisher }}
+{% endif %}{% if year %}- **Year:** {{ year }}
+{% endif %}{% if isbn %}- **ISBN:** {{ isbn }}
+{% endif %}- **Zotero:** [Open in Zotero](zotero://select/items/{{ key }})
+{% if pdf_path %}- **File:** [Open File](file://{{ pdf_path }})
+{% endif %}
+
+{% if annotations %}
+## Highlights & Reading Notes
+{% for a in annotations %}
+{% if a.text %}
+> [!quote]{% if a.page %} (Page {{ a.page }}){% endif %}
+> {{ a.text | replace('\n', '\n> ') }}
+{% if a.comment %}
+> - **Note:** {{ a.comment }}
+{% endif %}
+{% elif a.comment %}
+- **Note{% if a.page %} (Page {{ a.page }}){% endif %}:** {{ a.comment }}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+---
+{{ user_content_marker }}
+## Book Summary & Reflections
+
+<!-- Anything below this line is preserved during sync -->

@@ -1,0 +1,54 @@
+---
+aliases:
+  - "{{ title | replace('"', '\\"') }}"
+  - "@{{ citekey }}"
+tags:
+  - "reference"
+{% for tag in tags %}  - "{{ tag }}"
+{% endfor %}citekey: "{{ citekey }}"
+title: "{{ title | replace('"', '\\"') }}"
+authors:
+{% for author in authors %}  - "{{ author }}"
+{% endfor %}{% if year %}year: {{ year }}
+{% endif %}{% if url %}url: "{{ url }}"
+{% endif %}zotero_link: "zotero://select/items/{{ key }}"
+date_added: "{{ date_added }}"
+---
+
+# {{ title }}
+
+{% if abstract %}
+> [!abstract] Summary
+> {{ abstract | replace('\n', '\n> ') }}
+{% endif %}
+
+## Details
+- **Authors:** {{ authors_string }}
+{% if publication_title %}- **Source:** *{{ publication_title }}*
+{% endif %}{% if year %}- **Year:** {{ year }}
+{% endif %}{% if doi %}- **DOI:** [{{ doi }}](https://doi.org/{{ doi }})
+{% endif %}- **Zotero:** [Open in Zotero](zotero://select/items/{{ key }})
+{% if pdf_path %}- **Attachment:** [Open](file://{{ pdf_path }})
+{% endif %}
+
+{% if annotations %}
+## Annotations
+{% for a in annotations %}
+{% if a.text %}
+> [!quote]{% if a.page %} (Page {{ a.page }}){% endif %}
+> {{ a.text | replace('\n', '\n> ') }}
+{% if a.comment %}
+> - **Note:** {{ a.comment }}
+{% endif %}
+{% elif a.comment %}
+- **Note{% if a.page %} (Page {{ a.page }}){% endif %}:** {{ a.comment }}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+---
+{{ user_content_marker }}
+## Notes
+
+<!-- Anything below this line is preserved during sync -->
