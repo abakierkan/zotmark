@@ -1,6 +1,6 @@
 # Zotmark (`zotmark`)
 
-A fast, independent, and template-driven CLI tool that synchronizes your Zotero library and PDF annotations into Obsidian literature notes without relying on deprecated Obsidian plugins.
+A fast, independent, and template-driven CLI tool that synchronizes your Zotero reference library and PDF annotations into Markdown literature notes for any plain-text note-taking app or literature scanning workflow.
 
 > [!TIP]
 > For a comprehensive, step-by-step guide to configuring rules, routing categories, and writing Jinja2 templates, see the **[Configuration & Setup Guide](docs/CONFIGURATION_AND_SETUP.md)**.
@@ -11,10 +11,11 @@ A fast, independent, and template-driven CLI tool that synchronizes your Zotero 
 
 - **Direct Live Connection:** Connects directly to local Zotero Desktop via its local Web API (`port 23119`) and Better BibTeX JSON-RPC (`/better-bibtex/json-rpc`).
 - **Offline SQLite Fallback:** When Zotero Desktop is closed, safely reads `zotero.sqlite` directly in immutable read-only mode (`mode=ro&immutable=1`), avoiding database lock errors.
-- **Category & Template Mapping:** Easily assign different templates and vault folders based on **collections** (e.g. `Qaidam solo-TnpB manuscript`), **item types** (e.g. `book` vs `journalArticle`), or tags.
+- **Universal Markdown Output:** Produces clean, standard Markdown with YAML frontmatter, compatible with any plain-text knowledge base or note-taking tool (Obsidian, Logseq, SilverBullet, Foam, Neovim, etc.).
+- **Category & Template Mapping:** Easily assign different templates and destination folders based on **collections** (e.g. `My Project Collection`), **item types** (e.g. `book` vs `journalArticle`), or tags.
 - **Interactive Setup Wizard:** Run `zotmark init` to discover your Zotero categories and interactively configure your rules.
 - **Jinja2 Templating:** Fully customizable templates with frontmatter, DOIs, authors, abstracts, and direct links to local PDF files (`file://...`).
-- **PDF Annotation & Highlight Extraction:** Automatically pulls quotes, page numbers, color highlights, and comments from Zotero's PDF reader into callout blocks.
+- **PDF Annotation & Highlight Extraction:** Automatically pulls quotes, page numbers, color highlights, and comments from Zotero's PDF reader into callout / blockquote blocks.
 - **Non-Destructive Updates:** Automatically preserves any personal notes, synthesis, or backlinks written below the `<!-- USER_CONTENT_START -->` marker during future syncs.
 - **Safe Dry-Run Mode:** Inspect exactly what files will be created or modified before touching disk.
 
@@ -28,7 +29,7 @@ zotmark list
 ```
 
 ### 2. Run the Interactive Setup Wizard (Optional)
-If you want to reconfigure your categories, vault folders, or templates:
+If you want to reconfigure your categories, folders, or templates:
 ```bash
 zotmark init
 ```
@@ -64,8 +65,9 @@ zotmark watch --interval 300
 Your configuration lives in `config.yaml` and can be edited anytime:
 
 ```yaml
-vault_path: "/home/xenologos/Koofr/obsidian"
-default_output_dir: "02-Records/Literature"
+# Target notes directory
+notes_path: "~/Notes"
+default_output_dir: "Literature"
 file_name_format: "@{{ citekey }}"
 
 zotero:
@@ -74,10 +76,10 @@ zotero:
 
 categories:
   # Rule 1: Specific collection
-  - name: "Qaidam Manuscript Collection"
+  - name: "Project Collection"
     match:
-      collection: "Qaidam solo-TnpB manuscript"
-    output_dir: "02-Records/Literature/Qaidam"
+      collection: "My Project"
+    output_dir: "Literature/MyProject"
     template: "templates/paper.md.j2"
     enabled: true
 
@@ -85,7 +87,7 @@ categories:
   - name: "Books"
     match:
       item_type: "book"
-    output_dir: "02-Records/Books"
+    output_dir: "Books"
     template: "templates/book.md.j2"
     enabled: true
 
@@ -96,13 +98,13 @@ categories:
         - "journalArticle"
         - "preprint"
         - "conferencePaper"
-    output_dir: "02-Records/Literature"
+    output_dir: "Literature"
     template: "templates/paper.md.j2"
     enabled: true
 
   # Rule 4: Fallback
   - name: "All Other Items"
-    output_dir: "02-Records/Literature"
+    output_dir: "Literature"
     template: "templates/default.md.j2"
     enabled: true
 

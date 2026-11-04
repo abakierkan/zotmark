@@ -19,17 +19,22 @@ class SyncSettings:
 
 @dataclass
 class AppConfig:
-    vault_path: str = "/home/xenologos/Koofr/obsidian"
-    default_output_dir: str = "02-Records/Literature"
+    notes_path: str = "~/Notes"
+    default_output_dir: str = "Literature"
     file_name_format: str = "@{{ citekey }}"
     zotero_api_url: str = "http://127.0.0.1:23119"
     zotero_db_path: str = "~/Zotero/zotero.sqlite"
     categories: list[CategoryRule] = field(default_factory=list)
     sync: SyncSettings = field(default_factory=SyncSettings)
 
+    @property
+    def vault_path(self) -> str:
+        """Backwards compatibility alias for notes_path."""
+        return self.notes_path
+
     def to_dict(self) -> dict[str, Any]:
         return {
-            "vault_path": str(self.vault_path),
+            "notes_path": str(self.notes_path),
             "default_output_dir": self.default_output_dir,
             "file_name_format": self.file_name_format,
             "zotero": {
@@ -65,7 +70,7 @@ class AppConfig:
                     name=cat_data.get("name", "Untitled Rule"),
                     match_collection=match_data.get("collection"),
                     match_item_type=match_data.get("item_type"),
-                    output_dir=cat_data.get("output_dir", "02-Records/Literature"),
+                    output_dir=cat_data.get("output_dir", "Literature"),
                     template=cat_data.get("template", "templates/paper.md.j2"),
                     enabled=cat_data.get("enabled", True),
                 )
@@ -78,9 +83,12 @@ class AppConfig:
             include_abstract=sync_data.get("include_abstract", True),
         )
 
+        # Support both 'notes_path' and legacy 'vault_path'
+        resolved_notes_path = data.get("notes_path") or data.get("vault_path") or "~/Notes"
+
         return cls(
-            vault_path=data.get("vault_path", "/home/xenologos/Koofr/obsidian"),
-            default_output_dir=data.get("default_output_dir", "02-Records/Literature"),
+            notes_path=resolved_notes_path,
+            default_output_dir=data.get("default_output_dir", "Literature"),
             file_name_format=data.get("file_name_format", "@{{ citekey }}"),
             zotero_api_url=zotero_data.get("api_url", "http://127.0.0.1:23119"),
             zotero_db_path=zotero_data.get("db_path", "~/Zotero/zotero.sqlite"),

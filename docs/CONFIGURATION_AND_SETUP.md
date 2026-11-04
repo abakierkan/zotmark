@@ -1,6 +1,6 @@
-# Zotero to Obsidian Sync: Setup & Configuration Guide
+# Zotmark: Setup & Configuration Guide
 
-This guide provides complete documentation for installing, configuring, and customizing `zotmark` (`zotmark`), including detailed explanations of the configuration file, category routing rules, and Jinja2 template authoring.
+This guide provides complete documentation for installing, configuring, and customizing `zotmark`, including detailed explanations of the configuration file, category routing rules, and Jinja2 template authoring for any Markdown-based note-taking application or literature scanning system.
 
 ---
 
@@ -17,7 +17,7 @@ This guide provides complete documentation for installing, configuring, and cust
 5. [Template Authoring Guide (Jinja2)](#5-template-authoring-guide-jinja2)
    - [Template Variables Reference](#template-variables-reference)
    - [Annotation & Highlight Objects](#annotation--highlight-objects)
-   - [Writing Clean Obsidian Callouts](#writing-clean-obsidian-callouts)
+   - [Writing Clean Callouts & Blockquotes](#writing-clean-callouts--blockquotes)
    - [Example: Research Paper Template](#example-research-paper-template)
    - [Example: Book Template](#example-book-template)
 6. [Non-Destructive User Notes Preservation](#6-non-destructive-user-notes-preservation)
@@ -31,7 +31,7 @@ This guide provides complete documentation for installing, configuring, and cust
 
 ## 1. Architecture Overview
 
-`zotmark` is an independent bridge connecting your Zotero desktop library directly to your Obsidian vault without depending on Obsidian community plugins.
+`zotmark` is an independent bridge connecting your Zotero desktop library directly to your Markdown notes directory without depending on any specific application plugins or proprietary formats.
 
 ```
 ┌─────────────────────────────────┐
@@ -43,7 +43,7 @@ This guide provides complete documentation for installing, configuring, and cust
                  │
                  ▼
 ┌─────────────────────────────────┐
-│       zotmark Engine        │
+│         zotmark Engine          │
 │  - Category & Collection Matcher│
 │  - Jinja2 Template Renderer     │
 │  - User Content Preserver       │
@@ -51,7 +51,7 @@ This guide provides complete documentation for installing, configuring, and cust
                  │
                  ▼
 ┌─────────────────────────────────┐
-│         Obsidian Vault          │
+│     Markdown Notes Repository   │
 │  - @citekey.md Markdown Notes   │
 │  - YAML Frontmatter & Metadata  │
 │  - PDF Highlights & Annotations │
@@ -61,6 +61,7 @@ This guide provides complete documentation for installing, configuring, and cust
 
 - **Dual-mode Data Engine:** Connects to `http://127.0.0.1:23119` when Zotero is running; automatically falls back to direct SQLite queries using URI mode `file:...zotero.sqlite?mode=ro&immutable=1` when Zotero is closed.
 - **Citekey Integration:** Native support for Better BibTeX citekeys (e.g. `willingham-2008-critical-thinking-why`), with automatic fallback to standard `auth-year-title` generation.
+- **Universal Markdown Output:** Generated notes use standard YAML frontmatter and GitHub-flavored Markdown, compatible with Obsidian, Logseq, SilverBullet, Foam, Zettlr, Neovim, or static site generators.
 
 ---
 
@@ -77,7 +78,7 @@ To make the `zotmark` command available anywhere in your terminal:
 
 ```bash
 cd /home/xenologos/Projects/zotmark
-uv tool install . --editable
+uv tool install . --editable --force
 ```
 
 Verify the installation:
@@ -97,8 +98,8 @@ zotmark init
 
 The wizard will:
 1. Test connection to your local Zotero instance.
-2. Prompt for your **Obsidian Vault path** (defaults to `/home/xenologos/Koofr/obsidian`).
-3. Prompt for your **default notes folder** inside the vault (e.g. `02-Records/Literature`).
+2. Prompt for your **Markdown notes directory path** (e.g. `~/Notes`).
+3. Prompt for your **default notes folder** inside the directory (e.g. `Literature`).
 4. Prompt for your **note filename pattern** (e.g. `@{{ citekey }}`).
 5. Query your Zotero library and list all discovered **Collections** and **Item Types**.
 6. Ask which collections and item types to sync, and let you assign custom destination folders and templates to each.
@@ -114,7 +115,6 @@ The wizard will:
 1. Path provided explicitly via `--config-path <path>` or `-c <path>`.
 2. Current working directory (`./config.yaml`).
 3. User configuration directory (`~/.config/zotmark/config.yaml`).
-4. Global project root (`/home/xenologos/Projects/zotmark/config.yaml`).
 
 ---
 
@@ -124,15 +124,15 @@ Here is a complete, annotated `config.yaml` explaining every option:
 
 ```yaml
 # ==============================================================================
-# Obsidian Vault Settings
+# Markdown Notes Directory Settings
 # ==============================================================================
 
-# Absolute path to your Obsidian vault root directory
-vault_path: "/home/xenologos/Koofr/obsidian"
+# Absolute or home-relative path to your Markdown notes root directory
+notes_path: "~/Notes"
 
-# Default folder inside your vault where notes will be written if a category
-# does not specify a custom output_dir. (Relative to vault_path)
-default_output_dir: "02-Records/Literature"
+# Default folder inside your notes directory where notes will be written if a
+# category rule does not specify a custom output_dir. (Relative to notes_path)
+default_output_dir: "Literature"
 
 # Note file naming pattern using Jinja2 syntax.
 # Available variables: citekey, key, title, year, author
@@ -165,10 +165,10 @@ zotero:
 categories:
   # Rule Example 1: Match by Zotero Collection
   # Useful for project-specific bibliographies.
-  - name: "Qaidam Manuscript Collection"
+  - name: "Project Collection"
     match:
-      collection: "Qaidam solo-TnpB manuscript"
-    output_dir: "02-Records/Literature/Qaidam"
+      collection: "My Research Project"
+    output_dir: "Literature/Project"
     template: "templates/paper.md.j2"
     enabled: true
 
@@ -176,7 +176,7 @@ categories:
   - name: "Books"
     match:
       item_type: "book"
-    output_dir: "02-Records/Books"
+    output_dir: "Books"
     template: "templates/book.md.j2"
     enabled: true
 
@@ -187,14 +187,14 @@ categories:
         - "journalArticle"
         - "preprint"
         - "conferencePaper"
-    output_dir: "02-Records/Literature"
+    output_dir: "Literature"
     template: "templates/paper.md.j2"
     enabled: true
 
   # Rule Example 4: Catch-All Fallback
   # If an item does not match any previous rule, this rule catches it.
   - name: "All Other Items"
-    output_dir: "02-Records/Literature"
+    output_dir: "Literature"
     template: "templates/default.md.j2"
     enabled: true
 
@@ -203,8 +203,8 @@ categories:
 # Sync Behavior Settings
 # ==============================================================================
 sync:
-  # If true, any personal notes written inside Obsidian below the
-  # user_content_marker will never be overwritten or deleted during syncs.
+  # If true, any personal notes written below the user_content_marker will never
+  # be overwritten or deleted during syncs.
   preserve_user_notes: true
 
   # Boundary string separating generated reference metadata from personal notes.
@@ -300,9 +300,9 @@ Each item in `annotations` has the following attributes:
 
 ---
 
-### Writing Clean Obsidian Callouts
+### Writing Clean Callouts & Blockquotes
 
-Obsidian callouts require lines inside the block to begin with `> `. You can use Jinja2's `replace` filter to ensure multiline abstracts or highlights format cleanly:
+Callouts or blockquotes format cleanly when multiline text is prefixed with `> `. You can use Jinja2's `replace` filter:
 
 ```jinja2
 {% if abstract %}
@@ -430,7 +430,7 @@ date_added: "{{ date_added }}"
 
 ## 6. Non-Destructive User Notes Preservation
 
-A common problem with literature note sync tools is that modifying a paper in Zotero (e.g. fixing a title typo or adding a tag) overwrites the Obsidian note, wiping out notes you took.
+A common problem with reference sync tools is that modifying metadata in Zotero (e.g. fixing a title typo or adding a tag) overwrites the Markdown note, wiping out notes you took.
 
 `zotmark` solves this cleanly:
 1. Every note generated contains the boundary marker:
@@ -486,7 +486,7 @@ zotmark run --force
 
 ### Running as a Background Daemon (`watch`)
 
-You can run `zotmark watch` to automatically check for newly added papers in Zotero and sync them into Obsidian:
+You can run `zotmark watch` to automatically check for newly added papers in Zotero and sync them:
 
 ```bash
 # Check every 5 minutes (300 seconds)
@@ -503,7 +503,7 @@ To run the sync watcher continuously in the background on Linux:
 
 ```ini
 [Unit]
-Description=Zotero to Obsidian Background Sync Watcher
+Description=Zotmark Background Literature Sync Watcher
 After=network.target
 
 [Service]
@@ -544,4 +544,3 @@ The tool automatically falls back to generating clean standard citekeys matching
 
 #### Q: How do I exclude certain collections from being synced?
 In `config.yaml`, either set `enabled: false` on that category rule, or simply do not include a rule for it if you don't have a catch-all fallback rule enabled.
-

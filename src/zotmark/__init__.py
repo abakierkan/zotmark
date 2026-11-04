@@ -1,4 +1,4 @@
-"""Zotmark: Sync Zotero library and PDF annotations into Obsidian notes."""
+"""Zotmark: Sync Zotero library and PDF annotations into Markdown notes."""
 
 from zotmark.cli import main
 

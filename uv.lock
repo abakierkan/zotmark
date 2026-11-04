@@ -303,7 +303,7 @@ wheels = [
 ]
 
 [[package]]
-name = "zotero-obsidian-sync"
+name = "zotmark"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

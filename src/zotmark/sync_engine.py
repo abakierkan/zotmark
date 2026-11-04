@@ -25,15 +25,20 @@ class SyncStats:
 class SyncEngine:
     def __init__(self, config: AppConfig, client: ZoteroClient | None = None):
         self.config = config
-        self.vault_path = Path(config.vault_path).expanduser().resolve()
+        self.notes_path = Path(config.notes_path).expanduser().resolve()
         self.client = client or ZoteroClient(
             api_base_url=config.zotero_api_url,
             db_path=config.zotero_db_path,
         )
         self.template_engine = TemplateEngine(
-            template_dirs=[Path(self.config.vault_path) / "templates"]
+            template_dirs=[Path(self.config.notes_path) / "templates"]
         )
         self._collections_map: dict[str, str] = {}
+
+    @property
+    def vault_path(self) -> Path:
+        """Backwards compatibility alias for notes_path."""
+        return self.notes_path
 
     def _ensure_collections_map(self) -> None:
         if not self._collections_map:
@@ -54,7 +59,7 @@ class SyncEngine:
         dry_run: bool = False,
         force: bool = False,
     ) -> SyncStats:
-        """Synchronize a list of items to the Obsidian vault."""
+        """Synchronize a list of items to the Markdown notes directory."""
         stats = SyncStats()
         self._ensure_collections_map()
 
@@ -66,7 +71,7 @@ class SyncEngine:
                 continue
 
             try:
-                target_dir = self.vault_path / rule.output_dir
+                target_dir = self.notes_path / rule.output_dir
                 filename = self.template_engine.render_filename(
                     self.config.file_name_format, item
                 )

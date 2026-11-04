@@ -22,7 +22,7 @@ console = Console()
 
 @click.group()
 def cli() -> None:
-    """Zotmark: Sync your Zotero library and PDF annotations into Obsidian notes."""
+    """Zotmark: Sync your Zotero library and PDF annotations into Markdown notes."""
     pass
 
 
@@ -33,7 +33,7 @@ def init(config_path: str) -> None:
     console.print(
         Panel.fit(
             "[bold cyan]Zotmark - Setup Wizard[/bold cyan]\n"
-            "Configure which Zotero categories to import into your vault and with which templates.",
+            "Configure which Zotero categories to import into your notes directory and with which templates.",
             border_style="cyan",
         )
     )
@@ -47,24 +47,24 @@ def init(config_path: str) -> None:
             "[yellow]! Zotero Desktop API not responding. Using local SQLite database fallback.[/yellow]"
         )
 
-    # 1. Ask Vault Path
-    default_vault = (
+    # 1. Ask Notes Directory Path
+    default_notes_path = (
         "/home/xenologos/Koofr/obsidian"
         if Path("/home/xenologos/Koofr/obsidian").exists()
-        else "~/Documents/ObsidianVault"
+        else "~/Notes"
     )
-    vault_input = Prompt.ask(
-        "Enter path to your Obsidian vault",
-        default=default_vault,
+    notes_input = Prompt.ask(
+        "Enter path to your Markdown notes directory",
+        default=default_notes_path,
     )
-    vault_path = Path(vault_input).expanduser().resolve()
-    if not vault_path.exists():
-        console.print(f"[yellow]Note: Vault directory '{vault_path}' does not exist yet.[/yellow]")
+    notes_path = Path(notes_input).expanduser().resolve()
+    if not notes_path.exists():
+        console.print(f"[yellow]Note: Directory '{notes_path}' does not exist yet.[/yellow]")
 
     # 2. Ask Default Output Folder
     default_dir = Prompt.ask(
-        "Default folder for notes inside vault",
-        default="02-Records/Literature",
+        "Default folder for literature notes (relative to notes directory)",
+        default="Literature",
     )
 
     # 3. Ask File Name Format
@@ -123,7 +123,7 @@ def init(config_path: str) -> None:
             default=True,
         )
         if include_books:
-            book_folder = Prompt.ask("    Folder for Books", default="02-Records/Books")
+            book_folder = Prompt.ask("    Folder for Books", default="Books")
             categories.append(
                 CategoryRule(
                     name="Books",
@@ -167,7 +167,7 @@ def init(config_path: str) -> None:
         )
 
     config = AppConfig(
-        vault_path=str(vault_path),
+        notes_path=str(notes_path),
         default_output_dir=default_dir,
         file_name_format=filename_format,
         categories=categories,
@@ -239,7 +239,7 @@ def run_sync(
     key: str | None,
     config_path: str | None,
 ) -> None:
-    """Run synchronization of Zotero entries into Obsidian notes."""
+    """Run synchronization of Zotero entries into Markdown notes."""
     try:
         config = load_config(config_path)
     except FileNotFoundError as e:
@@ -253,7 +253,7 @@ def run_sync(
     engine = SyncEngine(config=config, client=client)
 
     mode_label = "[yellow](DRY RUN)[/yellow] " if dry_run else ""
-    console.print(f"\n[bold]{mode_label}Starting Zotero to Obsidian Sync...[/bold]")
+    console.print(f"\n[bold]{mode_label}Starting Zotero to Markdown Sync...[/bold]")
 
     keys = [key] if key else None
     with console.status("[cyan]Fetching items from Zotero...[/cyan]"):

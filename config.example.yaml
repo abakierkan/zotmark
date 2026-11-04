@@ -3,10 +3,10 @@
 # Copy this file to config.yaml or run 'zotmark init' to generate interactively.
 # ==============================================================================
 
-# Target Obsidian Vault directory
-vault_path: "~/Documents/ObsidianVault"
+# Target Markdown notes directory
+notes_path: "~/Notes"
 
-# Default destination folder inside vault (relative to vault_path)
+# Default destination folder inside notes directory (relative to notes_path)
 default_output_dir: "Literature"
 
 # Note file naming pattern: e.g. '@{{ citekey }}' -> '@author-year-title.md'

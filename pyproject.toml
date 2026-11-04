@@ -1,7 +1,7 @@
 [project]
 name = "zotmark"
 version = "0.1.0"
-description = "Sync Zotero library and PDF annotations into Obsidian notes"
+description = "Sync Zotero library and PDF annotations into Markdown notes"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
