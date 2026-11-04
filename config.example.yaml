@@ -1,33 +1,82 @@
 # ==============================================================================
-# Zotmark Configuration (Example)
+# Zotmark Configuration File (Example)
 # Copy this file to config.yaml or run 'zotmark init' to generate interactively.
+# Online Guide: https://github.com/abakierkan/zotmark/blob/main/docs/CONFIGURATION_AND_SETUP.md
 # ==============================================================================
 
-# Target Markdown notes directory
+# ------------------------------------------------------------------------------
+# 1. Notes Directory Settings
+# ------------------------------------------------------------------------------
+# Root directory where your Markdown notes or literature repository is stored.
+# Examples: "~/Notes", "/home/username/Documents/KnowledgeBase", "~/ObsidianVault"
 notes_path: "~/Notes"
 
-# Default destination folder inside notes directory (relative to notes_path)
+# Default destination folder inside notes_path for unrouted items.
 default_output_dir: "Literature"
 
-# Note file naming pattern: e.g. '{{ citekey }}' -> 'author-year-title.md'
+# File naming pattern using Jinja2 syntax (.md is added automatically).
+#
+# Available placeholders:
+#   {{ citekey }} -> Better BibTeX citation key (e.g. willingham-2008-critical-thinking-why)
+#   {{ key }}     -> 8-character Zotero item key (e.g. JPAZLXQ2)
+#   {{ title }}   -> Sanitized publication title
+#   {{ year }}    -> 4-digit publication year (or 'nodate')
+#   {{ author }}  -> First author's last name (or 'anon')
+#
+# Examples:
+#   "{{ citekey }}"              -> willingham-2008-critical-thinking-why.md
+#   "@{{ citekey }}"             -> @willingham-2008-critical-thinking-why.md
+#   "{{ year }} - {{ title }}"   -> 2008 - Critical Thinking Why Is It So Hard to Teach.md
 file_name_format: "{{ citekey }}"
 
-# Zotero Connection Settings
+# ------------------------------------------------------------------------------
+# 2. Zotero Connection Settings
+# ------------------------------------------------------------------------------
 zotero:
+  # Local Zotero Desktop API (port 23119 by default)
   api_url: "http://127.0.0.1:23119"
+
+  # Path to local Zotero SQLite database.
+  # Automatically used as a zero-lock read-only fallback when Zotero is closed.
   db_path: "~/Zotero/zotero.sqlite"
 
-# Category Mapping Rules
+# ------------------------------------------------------------------------------
+# 3. Category & Template Routing Rules
+# ------------------------------------------------------------------------------
+# Each rule determines:
+#   - Which items match (by Zotero collection name, item_type, or both)
+#   - Where to place the note ('output_dir', relative to notes_path)
+#   - Which Jinja2 template to render ('template')
+#
+# Rules are evaluated sequentially from TOP to BOTTOM.
+# The FIRST rule that matches an item determines its destination!
+#
+# CHEAT SHEET - Common Zotero item_type tags:
+#   journalArticle   - Academic journal articles
+#   preprint         - Preprints (arXiv, bioRxiv, medRxiv, SSRN, etc.)
+#   conferencePaper  - Conference papers and proceedings
+#   book             - Books
+#   bookSection      - Book chapters or sections
+#   thesis           - Master's theses and Ph.D. dissertations
+#   report           - Whitepapers, institutional reports, technical reports
+#   webpage          - Web articles and blog posts
+#   manuscript       - Unpublished manuscripts
+#   patent           - Patents
+#
+# Available built-in templates:
+#   templates/paper.md.j2   - Optimized for scientific papers (DOIs, journal, PDF highlights)
+#   templates/book.md.j2    - Optimized for books (publisher, ISBN, reading notes)
+#   templates/default.md.j2 - Clean generic fallback for any item
 categories:
-  # Example 1: Match by Zotero Collection
+  # Rule 1: Match by specific Zotero Collection
   - name: "Project Collection"
     match:
-      collection: "My Project"
-    output_dir: "Literature/MyProject"
-    template: "templates/paper.md.j2"
+      collection: "My Research Project"  # Collection name in Zotero
+    output_dir: "Literature/MyProject"   # Target folder in notes_path
+    template: "templates/paper.md.j2"    # Jinja2 template path
     enabled: true
 
-  # Example 2: Books
+  # Rule 2: Match by item_type (Books)
   - name: "Books"
     match:
       item_type: "book"
@@ -35,7 +84,7 @@ categories:
     template: "templates/book.md.j2"
     enabled: true
 
-  # Example 3: Journal Articles, Preprints & Conference Papers
+  # Rule 3: Match multiple item types (Scientific Literature)
   - name: "Journal Articles & Preprints"
     match:
       item_type:
@@ -46,15 +95,24 @@ categories:
     template: "templates/paper.md.j2"
     enabled: true
 
-  # Example 4: Catch-all fallback
+  # Rule 4: Catch-all fallback rule for any remaining unclassified items
   - name: "All Other Items"
     output_dir: "Literature"
     template: "templates/default.md.j2"
     enabled: true
 
-# Sync Behaviors
+# ------------------------------------------------------------------------------
+# 4. Sync Behavior Settings
+# ------------------------------------------------------------------------------
 sync:
+  # When true, notes written below 'user_content_marker' will NEVER be overwritten!
   preserve_user_notes: true
+
+  # Boundary delimiter separating generated reference metadata from personal notes.
   user_content_marker: "<!-- USER_CONTENT_START -->"
+
+  # Whether to extract and include PDF highlights and comments from Zotero
   include_annotations: true
+
+  # Whether to include publication abstract in the note
   include_abstract: true

@@ -446,37 +446,43 @@ A common problem with reference sync tools is that modifying metadata in Zotero 
 
 ### CLI Commands & Flags
 
-#### 1. Display Current Summary
-Inspect your library and current active rules:
+#### 1. Display Current Summary & Discovered Tags
+Inspect your library, item types, and current active rules:
 ```bash
 zotmark list
 ```
 
-#### 2. Dry Run Preview
+#### 2. Open & Edit Configuration
+Open your active configuration in your default editor with full inline cheat-sheets:
+```bash
+zotmark edit
+```
+
+#### 3. Dry Run Preview
 Test what would be created or updated without touching any files:
 ```bash
 zotmark run --dry-run
 ```
 
-#### 3. Run Sync
+#### 4. Run Sync
 Synchronize all enabled items:
 ```bash
 zotmark run
 ```
 
-#### 4. Sync Only Recent Items
+#### 5. Sync Only Recent Items
 Sync only the $N$ most recently added items in Zotero:
 ```bash
 zotmark run --recent 10
 ```
 
-#### 5. Sync a Single Item
+#### 6. Sync a Single Item
 Sync one item by its 8-character Zotero key:
 ```bash
 zotmark run --key JPAZLXQ2
 ```
 
-#### 6. Force Overwrite Unchanged Notes
+#### 7. Force Overwrite Unchanged Notes
 By default, notes whose content has not changed are skipped to avoid unnecessary file modification timestamps. To force re-rendering:
 ```bash
 zotmark run --force

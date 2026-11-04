@@ -222,8 +222,25 @@ def list_categories(config_path: str | None) -> None:
                 "[green]yes[/green]" if r.enabled else "[red]no[/red]",
             )
         console.print(rule_table)
+        console.print(
+            "\n[dim]Tip: You can use any collection name or item type from above in your rules.[/dim]\n"
+            "[dim]To edit your configuration file directly with all inline guides, run: [bold cyan]zotmark edit[/bold cyan][/dim]"
+        )
     except Exception:
         console.print("[dim]No config.yaml found yet. Run 'zotmark init' to configure rules.[/dim]")
+
+
+@cli.command("edit")
+@click.option("--config-path", "-c", default=None, help="Path to config file.")
+def edit_config(config_path: str | None) -> None:
+    """Open config.yaml in your default text editor."""
+    path = find_config_path(config_path)
+    if not path.exists():
+        console.print(f"[yellow]Config file not found at {path}. Generating standard config...[/yellow]")
+        save_config(AppConfig(), path)
+
+    console.print(f"[cyan]Opening config file:[/cyan] [bold]{path}[/bold]")
+    click.edit(filename=str(path))
 
 
 @cli.command("run")

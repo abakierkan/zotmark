@@ -28,19 +28,25 @@ A fast, independent, and template-driven CLI tool that synchronizes your Zotero 
 zotmark list
 ```
 
-### 2. Run the Interactive Setup Wizard (Optional)
-If you want to reconfigure your categories, folders, or templates:
+### 2. Edit Configuration Directly
+Open your configuration in your default editor with full inline cheat-sheets:
+```bash
+zotmark edit
+```
+
+### 3. Run the Interactive Setup Wizard (Optional)
+If you prefer a step-by-step interactive CLI setup:
 ```bash
 zotmark init
 ```
 
-### 3. Preview Sync (Dry Run)
+### 4. Preview Sync (Dry Run)
 Preview notes that will be created or updated:
 ```bash
 zotmark run --dry-run
 ```
 
-### 4. Run Synchronization
+### 5. Run Synchronization
 ```bash
 # Sync all enabled categories
 zotmark run
@@ -52,7 +58,7 @@ zotmark run --recent 5
 zotmark run --key JPAZLXQ2
 ```
 
-### 5. Continuous Background Watcher
+### 6. Continuous Background Watcher
 To periodically check for new items in Zotero (e.g., every 5 minutes):
 ```bash
 zotmark watch --interval 300
