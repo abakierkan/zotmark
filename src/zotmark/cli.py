@@ -69,8 +69,8 @@ def init(config_path: str) -> None:
 
     # 3. Ask File Name Format
     filename_format = Prompt.ask(
-        "File naming pattern (e.g. '@{{ citekey }}' or '{{ citekey }}')",
-        default="@{{ citekey }}",
+        "File naming pattern (e.g. '{{ citekey }}' or '@{{ citekey }}')",
+        default="{{ citekey }}",
     )
 
     # 4. Discover Collections & Item Types

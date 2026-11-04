@@ -141,7 +141,7 @@ default_output_dir: "Literature"
 #   "@{{ citekey }}"              -> @willingham-2008-critical-thinking-why.md
 #   "{{ citekey }}"               -> willingham-2008-critical-thinking-why.md
 #   "{{ year }} - {{ title }}"    -> 2008 - Critical Thinking Why Is It So Hard to Teach.md
-file_name_format: "@{{ citekey }}"
+file_name_format: "{{ citekey }}"
 
 
 # ==============================================================================

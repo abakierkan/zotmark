@@ -21,7 +21,7 @@ class SyncSettings:
 class AppConfig:
     notes_path: str = "~/Notes"
     default_output_dir: str = "Literature"
-    file_name_format: str = "@{{ citekey }}"
+    file_name_format: str = "{{ citekey }}"
     zotero_api_url: str = "http://127.0.0.1:23119"
     zotero_db_path: str = "~/Zotero/zotero.sqlite"
     categories: list[CategoryRule] = field(default_factory=list)
@@ -89,7 +89,7 @@ class AppConfig:
         return cls(
             notes_path=resolved_notes_path,
             default_output_dir=data.get("default_output_dir", "Literature"),
-            file_name_format=data.get("file_name_format", "@{{ citekey }}"),
+            file_name_format=data.get("file_name_format", "{{ citekey }}"),
             zotero_api_url=zotero_data.get("api_url", "http://127.0.0.1:23119"),
             zotero_db_path=zotero_data.get("db_path", "~/Zotero/zotero.sqlite"),
             categories=categories,

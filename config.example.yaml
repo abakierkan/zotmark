@@ -9,8 +9,8 @@ notes_path: "~/Notes"
 # Default destination folder inside notes directory (relative to notes_path)
 default_output_dir: "Literature"
 
-# Note file naming pattern: e.g. '@{{ citekey }}' -> '@author-year-title.md'
-file_name_format: "@{{ citekey }}"
+# Note file naming pattern: e.g. '{{ citekey }}' -> 'author-year-title.md'
+file_name_format: "{{ citekey }}"
 
 # Zotero Connection Settings
 zotero:

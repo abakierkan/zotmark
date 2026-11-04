@@ -68,7 +68,7 @@ Your configuration lives in `config.yaml` and can be edited anytime:
 # Target notes directory
 notes_path: "~/Notes"
 default_output_dir: "Literature"
-file_name_format: "@{{ citekey }}"
+file_name_format: "{{ citekey }}"
 
 zotero:
   api_url: "http://127.0.0.1:23119"
